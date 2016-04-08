@@ -1,0 +1,14 @@
+{
+  "name": "esprima-demo",
+  "version": "0.1.0",
+  "description": "just a quick test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Olivier Liechti",
+  "license": "ISC",
+  "dependencies": {
+    "esprima": "^2.7.1"
+  }
+}
