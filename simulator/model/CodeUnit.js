@@ -21,4 +21,13 @@ CodeUnit.prototype.addContributor = function( developer ) {
     this.contributors.push( developer );
 };
 
+CodeUnit.prototype.simplify = function() {
+    var res = {
+        id: this.id,
+        featureId: this.feature.id,
+        componentId: this.component.id
+    }
+    return res;
+}
+
 exports.CodeUnit = CodeUnit;

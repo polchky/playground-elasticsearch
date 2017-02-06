@@ -1,15 +1,17 @@
 var moment = require('moment');
 
-var Simulator = require('./simulator/simulator.js').Simulator;
-var Feature = require('./model/feature.js').Feature;
-var Component = require('./model/component.js').Component;
-var CodeBase = require('./model/codeBase.js').CodeBase;
-var Developer = require('./model/developer.js').Developer;
+var Simulator = require('./simulator/simulator').Simulator;
+var Feature = require('./model/feature').Feature;
+var Component = require('./model/component').Component;
+var CodeBase = require('./model/codebase').CodeBase;
+var Developer = require('./model/developer').Developer;
 
 var Reporter = require('./reporter/elasticSearchReporter').Reporter;
 var reporter = new Reporter();
 var codeBase = new CodeBase(reporter);
 
+var Chance = require('chance');
+var chance = new Chance();
 
 
 /*
@@ -36,23 +38,28 @@ var getTaskEndTimeBasedOnBusinessHours = function (startTime, hours) {
     }
 };
 
+
 new Component("Web front-end");
 new Component("REST API");
 new Component("Business layer");
 new Component("iOS app");
 new Component("android app");
 
-new Feature("Login");
-new Feature("Logout");
-new Feature("Register");
-new Feature("Edit profile");
-new Feature("Reset password");
-new Feature("Search for product");
-new Feature("Search full text");
-new Feature("Put product in cart");
-new Feature("Checkout");
-new Feature("Pay with credit card");
-new Feature("Rate product");
+simulator.schedule('reportComponents', Component.instances);
+
+new Feature("Login", null, null, reporter);
+new Feature("Logout", null, null, reporter);
+new Feature("Register", null, null, reporter);
+new Feature("Edit profile", null, null, reporter);
+new Feature("Reset password", null, null, reporter);
+new Feature("Search for product", null, null, reporter);
+new Feature("Search full text", null, null, reporter);
+new Feature("Put product in cart", null, null, reporter);
+new Feature("Checkout", null, null, reporter);
+new Feature("Pay with credit card", null, null, reporter);
+new Feature("Rate product", null, null, reporter);
+
+simulator.schedule('reportFeatures', Feature.instances)
 
 var d = new Developer();
 d.firstName = "Serious";
@@ -80,6 +87,19 @@ for (var i = 0; i < 3; i++) {
 }
 
 simulator.schedule('dailyBuild', {});
+
+simulator.on('reportComponents', function (components) {
+    components.forEach((component) => {
+        reporter.reportComponent(component.simplify());
+    });
+});
+
+
+simulator.on('reportFeatures', function (features) {
+    features.forEach((feature) => {
+        reporter.reportFeature(feature.simplify());
+    });
+});
 
 simulator.on('hireNewDeveloper', function (event) {
     var developer = event || new Developer();
@@ -117,7 +137,11 @@ simulator.on('makeProgressOnFeature', function (event) {
 
             return false;
 
-        } )[0] || new Feature();
+        } )[0];
+    if(!feature) {
+        feature = new Feature(chance.sentence({words: 2}));
+        reporter.reportFeature(feature.simplify());
+    }
 
     codeBase.makeProgressOnFeature(feature, event.developer);
     var numberOfHoursToMakeProgress = Math.floor(Math.random() * 16 + 1);
@@ -152,6 +176,3 @@ reporter.setupElasticSearch()
         console.log("catch: " + e);
         console.log(e.stack);
     });
-
-
-

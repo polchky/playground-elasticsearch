@@ -14,4 +14,11 @@ Component.prototype.addCodeUnit = function( codeUnit ) {
     this.codeUnits.push(codeUnit);
 };
 
+Component.prototype.simplify = function() {
+    return {
+        id: this.id,
+        name: this.name
+    }
+}
+
 exports.Component = Component;

@@ -11,7 +11,7 @@ var chance = new Chance();
  *
  * @constructor
  */
-function Feature( description, size, components ) {
+function Feature( description, size, components, reporter) {
 
     this.description = description;
 
@@ -39,12 +39,16 @@ function Feature( description, size, components ) {
     } else {
         this.impactedComponents = Component.pick();
     }
+
+    this.reporter = reporter;
 }
 
 var Feature = createBusinessObjectType(Feature);
 
 Feature.prototype.addUnitTest = function() {
-    this.unitTests.push( new UnitTest( this ) );
+    var unitTest = new UnitTest(this);
+    this.reporter.reportUnitTest(unitTest.simplify());
+    this.unitTests.push( unitTest );
 };
 
 Feature.prototype.addImpactedComponents = function( impactedComponent ) {
@@ -71,6 +75,13 @@ Feature.pickInProgressFeature = function() {
         return undefined;
     }
     return chance.pick(candidates);
+}
+
+Feature.prototype.simplify = function() {
+    return {
+        id: this.id,
+        description: this.description
+    }
 }
 
 exports.Feature = Feature;

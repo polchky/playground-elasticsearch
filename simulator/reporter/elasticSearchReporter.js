@@ -3,7 +3,9 @@ var elasticsearch = require('elasticsearch');
 var indexName = 'probedock';
 
 var client = new elasticsearch.Client({
-    host: 'localhost:9200'//,
+    host: 'localhost:9200',
+    timeout: 600000,
+    requestTimeout: 600000,
     //log: 'trace'
 });
 
@@ -43,6 +45,38 @@ Reporter.prototype.reportCodeBaseStats = function (codeBaseStats) {
         index: indexName,
         type: 'codeBaseStats',
         body: codeBaseStats
+    });
+};
+
+Reporter.prototype.reportComponent = function (component) {
+    return client.index({
+        index: indexName,
+        type: 'component',
+        body: component
+    });
+};
+
+Reporter.prototype.reportUnitTest = function (unitTest) {
+    return client.index({
+        index: indexName,
+        type: 'unitTest',
+        body: unitTest
+    });
+};
+
+Reporter.prototype.reportFeature = function (feature) {
+    return client.index({
+        index: indexName,
+        type: 'feature',
+        body: feature
+    });
+};
+
+Reporter.prototype.reportCodeUnit = function (codeUnit) {
+    return client.index({
+        index: indexName,
+        type: 'codeUnit',
+        body: codeUnit
     });
 };
 
@@ -97,6 +131,10 @@ var createIndex = function (name) {
                     feature: {
                     },
                     component: {
+                    },
+                    unitTest: {
+                    },
+                    codeUnit: {
                     }
                 }
             }
@@ -105,4 +143,3 @@ var createIndex = function (name) {
 };
 
 exports.Reporter = Reporter;
-

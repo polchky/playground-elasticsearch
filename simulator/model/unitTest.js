@@ -8,6 +8,17 @@ function UnitTest(codeUnit, feature, developer) {
     feature.unitTests.push(this);
 };
 
+
+
 var UnitTest = createBusinessObjectType(UnitTest);
+
+UnitTest.prototype.simplify = function() {
+    return {
+        id: this.id,
+        codeUnitId: this.codeUnit.id,
+        developerId: this.developer.id,
+        featureId: this.feature.id
+    }
+}
 
 exports.UnitTest = UnitTest;

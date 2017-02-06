@@ -1,20 +1,26 @@
 var Feature = require('./feature').Feature;
 var Component = require('./component').Component;
-var CodeUnit = require('./codeUnit').CodeUnit;
+var CodeUnit = require('./CodeUnit').CodeUnit;
 var UnitTest = require('./unitTest').UnitTest;
 var createBusinessObjectType = require('./businessObject').createBusinessObjectType;
 
+var Chance = require('chance');
+var chance = new Chance();
 
 function CodeBase(reporter) {
     this.reporter = reporter;
 };
 
 CodeBase.prototype.createNewFeature = function (description, size) {
-    new Feature(description, size);
+    var feature = new Feature(description, size, null, this.reporter);
+    this.reporter.reportFeature(feature.simplify()).then((success) => {}, (error) => {
+        console.log('error reporting feature: ');
+        console.log(error);
+    });
 };
 
 CodeBase.prototype.makeProgressOnFeature = function (feature, developer) {
-
+    var that = this;
     var teamFixesBugsBeforeWritingNewCode = false;
 
     /**
@@ -35,7 +41,11 @@ CodeBase.prototype.makeProgressOnFeature = function (feature, developer) {
     /**
      * If all buggy code has been fixed, we can make progress on the functionality
      */
-    var feature = feature || Feature.pick(1)[0] || new Feature();
+    var feature = feature || Feature.pick(1)[0];
+    if(!feature) {
+        feature = new Feature(chance.sentence({words: 2}));
+        this.reporter.reportFeature(feature.simplify());
+    }
     console.log("making progress on feature: " + feature.id);
     if (feature.progress < 100) {
         var delta = Math.floor(Math.random() * 30 + 5);
@@ -50,6 +60,10 @@ CodeBase.prototype.makeProgressOnFeature = function (feature, developer) {
         var numberOfCodeUnits = Math.floor(Math.random() * 5 + 1);
         for (var i = 0; i < numberOfCodeUnits; i++) {
             var codeUnit = new CodeUnit(feature, undefined, developer);
+            that.reporter.reportCodeUnit(codeUnit.simplify()).then((success) => {}, (error) => {
+                console.log('error reporting code unit: ');
+                console.log(error);
+            });
             //var deltaCorrectness = 100 - ( Math.floor(Math.random() * (1000 - developer.abilityToWriteCorrectCode * 10)));
             codeUnit.correctness = Math.max(Math.min(100, 100 - Math.random() * (100 - developer.abilityToWriteCorrectCode)), 0);
 
@@ -58,7 +72,11 @@ CodeBase.prototype.makeProgressOnFeature = function (feature, developer) {
              */
             var numberOfUnitTests = Math.floor(Math.random() * developer.abilityToWriteUnitTests);
             for (var i = 0; i < numberOfUnitTests; i++) {
-                new UnitTest(codeUnit, feature, developer);
+                var unitTest = new UnitTest(codeUnit, feature, developer);
+                that.reporter.reportUnitTest(unitTest.simplify()).then((success) => {}, (error) => {
+                    console.log('error on reporting unit test: ');
+                    console.log(error);
+                });
             }
         }
     }
