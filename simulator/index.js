@@ -143,7 +143,7 @@ simulator.on('makeProgressOnFeature', function (event) {
         reporter.reportFeature(feature.simplify());
     }
 
-    codeBase.makeProgressOnFeature(feature, event.developer);
+    codeBase.makeProgressOnFeature(feature, event.developer, simulator.getSimulatorTime());
     var numberOfHoursToMakeProgress = Math.floor(Math.random() * 16 + 1);
     simulator.schedule('makeProgressOnFeature', {developer: event.developer}, getTaskEndTimeBasedOnBusinessHours(simulator.getSimulatorTime(), numberOfHoursToMakeProgress));
 });

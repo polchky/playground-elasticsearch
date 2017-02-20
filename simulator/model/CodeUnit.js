@@ -2,8 +2,10 @@ var createBusinessObjectType = require('./businessObject').createBusinessObjectT
 
 var Chance = require('chance');
 var chance = new Chance();
+var moment = require('moment');
 
-function CodeUnit( feature, component, developer ) {
+function CodeUnit( feature, component, developer, time) {
+    this.date = moment(time);
     this.correctness = Math.floor(Math.random() * 100); // 0..100
     this.feature = feature;
     this.contributors = [];
@@ -23,6 +25,7 @@ CodeUnit.prototype.addContributor = function( developer ) {
 
 CodeUnit.prototype.simplify = function() {
     var res = {
+        date: this.date,
         id: this.id,
         featureId: this.feature.id,
         componentId: this.component.id

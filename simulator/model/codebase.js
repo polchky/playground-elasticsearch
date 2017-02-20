@@ -19,7 +19,7 @@ CodeBase.prototype.createNewFeature = function (description, size) {
     });
 };
 
-CodeBase.prototype.makeProgressOnFeature = function (feature, developer) {
+CodeBase.prototype.makeProgressOnFeature = function (feature, developer, time) {
     var that = this;
     var teamFixesBugsBeforeWritingNewCode = false;
 
@@ -59,7 +59,7 @@ CodeBase.prototype.makeProgressOnFeature = function (feature, developer) {
          */
         var numberOfCodeUnits = Math.floor(Math.random() * 5 + 1);
         for (var i = 0; i < numberOfCodeUnits; i++) {
-            var codeUnit = new CodeUnit(feature, undefined, developer);
+            var codeUnit = new CodeUnit(feature, undefined, developer, time);
             that.reporter.reportCodeUnit(codeUnit.simplify()).then((success) => {}, (error) => {
                 console.log('error reporting code unit: ');
                 console.log(error);
@@ -72,7 +72,7 @@ CodeBase.prototype.makeProgressOnFeature = function (feature, developer) {
              */
             var numberOfUnitTests = Math.floor(Math.random() * developer.abilityToWriteUnitTests);
             for (var i = 0; i < numberOfUnitTests; i++) {
-                var unitTest = new UnitTest(codeUnit, feature, developer);
+                var unitTest = new UnitTest(codeUnit, feature, developer, time);
                 that.reporter.reportUnitTest(unitTest.simplify()).then((success) => {}, (error) => {
                     console.log('error on reporting unit test: ');
                     console.log(error);
